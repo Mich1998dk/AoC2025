@@ -1,23 +1,33 @@
 package aoc.days;
 
+import java.util.List;
+
 import aoc.util.AocUtil;
 
 public class Day01 {
 
     private static final String DAY_INPUT_FILE = "./day01/input.txt";
 
-    private static int[] sonar;
+    private static List<String> sonar;
 
     private static void init() throws Exception {
-        sonar = AocUtil.readFileToIntArray(DAY_INPUT_FILE);
+        sonar = AocUtil.readFileToStrings(DAY_INPUT_FILE);
     }
 
     public static String solvePart1() throws Exception {
         init();
+        int position = 50;
         int counter = 0;
 
-        for (int i = 0; i < sonar.length - 1; i++) {
-            if (sonar[i + 1] - sonar[i] > 0) {
+        for (String rotation : sonar) {
+            String direction = rotation.substring(0, 1);
+            int clicks = Integer.parseInt(rotation.substring(1));
+            if (direction.equals("R")) {
+                position = (position + clicks) % 100;
+            } else {
+                position = (position - clicks) % 100;
+            }
+            if (position == 0) {
                 counter++;
             }
         }
@@ -26,13 +36,30 @@ public class Day01 {
 
     public static String solvePart2() throws Exception {
         init();
-        int counter = 0;
+        int position = 50;
+        long counter = 0;
 
-        for (int i = 0; i < sonar.length - 3; i++) {
-            if (sonar[i + 3] - sonar[i] > 0) {
-                counter++;
+        for (String rotation : sonar) {
+            String direction = rotation.substring(0, 1);
+            int clicks = Integer.parseInt(rotation.substring(1));
+
+            int remainingClicks = clicks % 100;
+            int startPosition = position;
+            counter += clicks / 100;
+
+            if (direction.equals("R")) {
+                if (startPosition + remainingClicks >= 100) {
+                    counter++;
+                }
+                position = (startPosition + clicks) % 100;
+            } else {
+
+                if (startPosition != 0 && startPosition - remainingClicks <= 0) {
+                    counter++;
+                }
+                position = (startPosition - remainingClicks % 100 + 100) % 100;
             }
         }
-        return Integer.toString(counter);
+        return Long.toString(counter);
     }
 }
